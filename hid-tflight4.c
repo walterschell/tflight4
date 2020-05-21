@@ -170,7 +170,7 @@ static u8 fixed_rdesc[] = {
 0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
 //Stick Rotation, Throttle, Throttle Paddles
-0x09, 0x35,       // Usage (rZ) Stick Rotation
+0x09, 0x32,       // Usage (Z) Stick Rotation
 0x09, 0x36,       // Usage (Slider) Throttle Position
 0x09, 0x35,       // Usage (rZ) Throttle Paddles
 0x15, 0x00,        //   Logical Minimum (0)
