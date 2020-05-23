@@ -1,4 +1,5 @@
 
+# TODO: add a sign target to sign the module when secure booted
 obj-m += hid-tflight4.o
 
 all:

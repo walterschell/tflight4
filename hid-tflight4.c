@@ -11,8 +11,12 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+static int split_axis = 0;
+module_param(split_axis, int, 0);
+
 #define USB_VENDOR_ID_THRUSTMASTER 0x044f
 #define USB_DEVICE_ID_THRUSTMASTER_TFLIGHT4 0xb67b
+#define STICK_ROTATION_OFFSET      45
 /*
 static u8 orig_rdesc[] = {
 0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
@@ -224,7 +228,18 @@ static __u8 *tflight_report_fixup(struct hid_device *hdev,
                                       unsigned int *rsize)
 {
     hid_info(hdev, "Fixing up HID Descriptor Report for T.Flight 4 Joystick");
-
+    if(split_axis)
+    {
+        hid_info(hdev, "Using split axis for stick and throttle pedals");
+	fixed_rdesc[STICK_ROTATION_OFFSET] = 0x32; // Usage (Z) Stick Rotation
+    }
+    else
+    {
+	hid_info(hdev, "Using unified axis for stick and throttle pedals");
+	fixed_rdesc[STICK_ROTATION_OFFSET] = 0x35 // Usage (rZ) Stick Rotation
+    }
+    // TODO: Is this safe? What if the parameter is changed after someone plugs a stick in and a second stick is plugged in?
+    // TODO: Check if kernel copies or refernces the rdesc. May need to just hold a whole second copy instead of trying to be clever
     rdesc = fixed_rdesc;
     *rsize = sizeof(fixed_rdesc);
     
