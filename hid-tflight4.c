@@ -1,6 +1,6 @@
 /**
  * This driver adds support for the Thrustmaster T.Flight 4 Joystick
- * The HID Report Description provided by the device does not map the 
+ * The HID Report Description provided by the device does not map the
  * fields where the stick twist, throttle paddles, and throttle position
  * are reported. The replaces the mapping with one that includes those fields
  * It removes the 8bit X/Y mappings provided and replaces them with 16bit
@@ -170,7 +170,7 @@ static u8 fixed_rdesc[] = {
 0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
 //Stick Rotation, Throttle, Throttle Paddles
-0x09, 0x35,       // Usage (rZ) Stick Rotation
+0x09, 0x35,       // Usage (rZ) Stick Rotation -- This is patched to 0x09, 0x32 (Usage (Z)) if throttle_seesaw_extra_axis is enabled
 0x09, 0x36,       // Usage (Slider) Throttle Position
 0x09, 0x35,       // Usage (rZ) Throttle Paddles
 0x15, 0x00,        //   Logical Minimum (0)
@@ -219,21 +219,32 @@ static u8 fixed_rdesc[] = {
 0xC0,              // End Collection
 };
 
-static __u8 *tflight_report_fixup(struct hid_device *hdev, 
+
+static int throttle_seesaw_extra_axis = 0;
+module_param(throttle_seesaw_extra_axis, int, 0664);
+MODULE_PARM_DESC(throttle_seesaw_extra_axis, "Assign stick twist to a Z axis, unlocking throttle seesaw as a separate Rz axis. Default is 0 (off), which matches proprietary driver. Set to 1 to enable.");
+
+
+static __u8 *tflight_report_fixup(struct hid_device *hdev,
                                       __u8 *rdesc,
                                       unsigned int *rsize)
 {
     hid_info(hdev, "Fixing up HID Descriptor Report for T.Flight 4 Joystick");
 
     rdesc = fixed_rdesc;
+
+// 0x32 Usage (Z) Stick Rotation
+// 0x35 Usage (rZ) Stick Rotation
+rdesc[121] = (throttle_seesaw_extra_axis) ? 0x32 : 0x35;
+
     *rsize = sizeof(fixed_rdesc);
-    
+
     return rdesc;
 }
 
 static const struct hid_device_id tflight_devices[] = {
-	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, USB_DEVICE_ID_THRUSTMASTER_TFLIGHT4)},
-	{ }
+    { HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, USB_DEVICE_ID_THRUSTMASTER_TFLIGHT4)},
+    { }
 };
 
 static struct hid_driver tflight_driver = {
