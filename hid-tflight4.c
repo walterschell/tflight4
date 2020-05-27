@@ -221,7 +221,7 @@ static u8 fixed_rdesc[] = {
 
 
 static int throttle_seesaw_extra_axis = 0;
-module_param(throttle_seesaw_extra_axis, int, 0660);
+module_param(throttle_seesaw_extra_axis, int, 0664);
 MODULE_PARM_DESC(throttle_seesaw_extra_axis, "Assign stick twist to a Z axis, unlocking throttle seesaw as a separate Rz axis. Default is 0 (off), which matches proprietary driver. Set to 1 to enable.");
 
 
@@ -233,8 +233,9 @@ static __u8 *tflight_report_fixup(struct hid_device *hdev,
 
     rdesc = fixed_rdesc;
 
-    if(throttle_seesaw_extra_axis)
-        rdesc[121] = 0x32; // 121 is the position of the 0x35 byte in original report (Usage (rZ))
+// 0x32 Usage (Z) Stick Rotation
+// 0x35 Usage (rZ) Stick Rotation
+rdesc[121] = (throttle_seesaw_extra_axis) ? 0x32 : 0x35;
 
     *rsize = sizeof(fixed_rdesc);
 
