@@ -3,7 +3,7 @@ Linux Kernel HID Module for Thrustmaster T.Flight HOTAS 4 Joystick
 
 The joystick's HID Report Descriptor does not provide a mappingn for the throttle, stick twist, or throttle paddles. This driver replaces the HID report descriptor with one that (hopefully works)
 
-# How to Use
+# How to Use (manually)
 
 Install whatever package your distro requires for compiling C. On ubuntu this is `build-essential`. 
 
@@ -27,6 +27,26 @@ To undo the previous step, do the following:
     sudo rm -f /lib/modules/$(uname -r)/kernel/drivers/hid/hid-tflight4.ko \
       && sudo depmod \
       && sudo sed -i '/hid-tflight4/d' /etc/modules
+
+# How to Use (DKMS)
+
+The following list should do it:
+
+```
+~$ sudo -i
+~# cd /usr/src
+~# git clone https://github.com/walterschell/tflight4.git tflight4-1.0
+~# dkms install tflight4/1.0
+```
+
+# Enable twist and seesaw axis separation
+
+Add configuration to the modprobe.d:
+
+```
+~$ sudo -i
+~# echo 'options hid-tflight4 throttle_seesaw_extra_axis=1' > /etc/modprobe.d/80-tflight4.conf
+```
 
 # TODO
 Need to test if the optional foot rudders are correctly supported.
