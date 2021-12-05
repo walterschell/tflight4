@@ -130,7 +130,14 @@ static u8 fixed_rdesc[] = {
 0x65, 0x00,        //   Unit (None)
 0x05, 0x09,        //   Usage Page (Button)
 0x19, 0x01,        //   Usage Minimum (0x01)
-0x29, 0x0E,        //   Usage Maximum (0x0E)
+
+// Begin Modification
+// Note this joystick only has 13 physical buttons
+// Assume the other is in there for padding
+0x29, 0x0D,        //   Usage Maximum (0x0D) was 0x29, 0x0E Usage Maximum (0x0E)
+
+// End Modifications
+
 0x15, 0x00,        //   Logical Minimum (0)
 0x25, 0x01,        //   Logical Maximum (1)
 0x75, 0x01,        //   Report Size (1)
